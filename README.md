@@ -9,7 +9,7 @@
 **[2023-03-20]** IFMSR v0.1 is modified.  
 
 ## Abstract 
-![Image text](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/architecture.png)  
+![Architecture](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/architecture.png)  
 Super-resolution (SR) is one of the powerful techniques to improve image quality for low-resolution (LR) hyperspectral image (HSI) with insufficient detail and noise. Traditional methods typically perform simple cascade or addition during the fusion of the auxiliary high-resolution (HR) RGB and LR HSI. As a result, the abundant HR RGB details are not utilized as a priori information to enhance the HSI feature representation, leaving room for further improvements. To address this issue, we propose an RGB-induced feature modulation network for HSI SR (IFMSR). Considering that similar patterns are common in images, a multi-corresponding patch aggregation is designed to globally assemble this contextual information, which is beneficial for feature learning. Besides, to adequately exploit plentiful HR RGB details, an RGB-induced detail enhancement (RDE) module and a deep cross-modality feature modulation (CFM) module are proposed to transfer the supplementary materials from RGB to HSI. These modules can provide a more direct and instructive representation, leading to further edge recovery. Experiments on several datasets demonstrate that our approach achieves comparable performance under more realistic degradation condition.  
 
 ## Motivation  
@@ -19,8 +19,6 @@ Super-resolution (SR) is one of the powerful techniques to improve image quality
 Therefore, how to leverage the intrinsic advantages of RGB image to assist the HSI branch to capture more discriminative features requires further research.
 
 ## Modules
-
-
 ### MCPA Module
 When the spectral imager generates HSI, it commonly obtains the corresponding RGB image. How to address RGB image with abundant color and texture to guide HSI SR is extremely challenging dilemma. To fully utilize raw RGB image, we deal with this image to generate more meaningful materials. Generally, some patches in the whole image appear similar patterns. These patches can benefit detail restoration, which has been verified in several previous low-level tasks. Although Li et al. [10] consider contextual information in image, it only focuses on local content, and ignores other similar patterns in global perspective. To achieve this end, a MCPA module is developed, as shown in Fig. 2.
 
@@ -66,28 +64,51 @@ To produce super-resolved HSI, the two modality must be into a unified form duri
 
 
 ## Dataset Preparation 
-Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/multispectral/ "CAVE"), [Harvard](https://dataverse.harvard.edu/ "Harvard"), [Chikusei]() and []() are employed to verify the effectiveness of the proposed IFMSR.  
+Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/multispectral/ "CAVE"), [Harvard](https://dataverse.harvard.edu/ "Harvard"), [Chikusei](https://naotoyokoya.com/Download.html "Chikusei") and [Sample of Roman Colosseum](https://earth.esa.int/eogateway/missions/worldview-2 "Sample of Roman Colosseum") are employed to verify the effectiveness of the proposed IFMSR.  
 
-- In our work, we randomly select **80%** of the data as the training set and the rest for testing.  
-- We augment the given training data by choosing **24** patches. With respect to each patch, its size is scaled **1**, **0.75**, and **0.5** times, respectively. We rotate these patches **90°** and flip them horizontally. Through various blur kernels, we then subsample these patches into LR hyperspectral images with the size of **L × 32 × 32**.  
+- **CAVE and Harvard:** 80% images are randomly selected as training set and the rest as test set.
+- **Chikusei:** We crop the top left of the HSI (2000×2335×128) as the training set, and other content as the test set. To obtain extra samples, the training set is divided into non-overlapping images with size 200×194×128 .
+- **Sample of Roman Colosseum** To evaluate the performance in this dataset, the top left of the HSI (209×658×8 ) and HR RGB image (836×2632×3 ) are cropped to train model, and other part is selected to test.
+
+- Since the spectral response function is known on the CAVE and Harvard datasets, the corresponding RGB images are generated using it. Other datasets with unknown spectral response function, Chikusei and Sample of Roman Collosseum, obtain corresponding RGB images via the position of pixels. Then, we random crop 64 patches with the size 12r×12r from the each image in the training set, where r is upscale factor. All patches are augmented by random flip, rotation, and roll. Then, these patches are downsampled by the above strategy in Section III-E to yield LR HSIs. In the test stage, we adopt anisotropic Gaussian to generate kernel, so as to blur the HR HSI images. Each kernel is determined by a covariance matrix α , which is defined as
+α=[cos(θ)sin(θ)−sin(θ)cos(θ)][λ100λ2][
 
 ## Implementation
-
 ### Pretrained model
 Clone this repository:
  
         git clone https://github.com/qianngli/IFMSR.git
         cd IFMSR
 
-
+1. Install PyTorch and dependencies from [http://pytorch.org](http://pytorch.org).  
+1. You could download the [pre-trained model](https://github.com/qianngli/MulSR/blob/master/pre-train%20model.txt) from [Google Drive](https://drive.google.com/drive/folders/1LuXDv5__KDdC3EeJZU5DOMmbs0L4bE7I?usp=sharing).  
+1. Remember to change the following path to yours：
+   - `MulSR/train.py` line 36, 39.
+   - `MulSR/fine.py` line 71, 72.
 
 ### Main parameter settings
+- With respect to experimental setup, we select the size of convolution kernels to be **3 × 3**, except for the kernels mentioned above. Moreover, the number of these kernels is set to **64**.
 
+        parser.add_argument('--kernel_size', type=int, default=3, help='number of module')
+        parser.add_argument('--n_feats', type=int, default=64, help='number of feature maps')
+
+- Following previous works, we fix the learning rate at **10^(−4)**, and its value is halved every **30** epoch.
+
+        parser.add_argument("--lr", type=int, default=1e-4, help="lerning rate")
+        parser.add_argument("--step", type=int, default=30, help="Sets the learning rate to the initial LR decayed by momentum every n epochs")
+
+- To optimize our model, the **ADAM** optimizer with **β1 = 0.9** and **β2 = 0.99** is chosen.
+- Moreover, we set **2α = β** in our article.
 
 ### Train & Test
+You can train or test directly from the command line as such:  
 
+    python train.py --cuda --datasetName CAVE --upscale_factor 4  
+    python fine.py --cuda --model_name checkpoint/model_4_epoch_xx.pth  
 
 ## Result  
+- To demonstrate the superiority of the proposed method, four approaches are compared with our method in each dimension. They are **MoG-DCN**, **UAL**, **PZRes-Net**, and **CoarseNet**. Among these competitors, UAL and CoarseNet contain two steps. The first step is to learn a general model by supervised manner. The second step is to optimize the model in specific image by unsupervised manner. Note that two methods need spectral response function in second step. For fair comparison, we remove the second step. The remaining works are supervised approaches.
+- To evaluate the performance, we apply peak signal-to- noise ratio (**PSNR**), structural similarity (**SSIM**), spectral angle mapper (**SAM**), and root mean squared error (**RMSE**). Here, the higher values of PSNR and SSIM indicate better quality of reconstructed image. Besides, the obtained image is better in the aspects of edge and texture, when the values of SAM and RMES are small.
 
 ### Quantitative Evaluation
 
