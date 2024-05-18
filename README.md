@@ -20,7 +20,7 @@ Therefore, how to leverage the intrinsic advantages of RGB image to assist the H
 
 ## Modules
 ### MCPA Module
-When the spectral imager generates HSI, it commonly obtains the corresponding RGB image. How to address RGB image with abundant color and texture to guide HSI SR is extremely challenging dilemma. To fully utilize raw RGB image, we deal with this image to generate more meaningful materials. Generally, some patches in the whole image appear similar patterns. These patches can benefit detail restoration, which has been verified in several previous low-level tasks. Although Li et al. [10] consider contextual information in image, it only focuses on local content, and ignores other similar patterns in global perspective. To achieve this end, a MCPA module is developed, as shown in Fig. 1.
+When the spectral imager generates HSI, it commonly obtains the corresponding RGB image. How to address RGB image with abundant color and texture to guide HSI SR is extremely challenging dilemma. To fully utilize raw RGB image, we deal with this image to generate more meaningful materials. Generally, some patches in the whole image appear similar patterns. These patches can benefit detail restoration, which has been verified in several previous low-level tasks. Although Li et al. [3] consider contextual information in image, it only focuses on local content, and ignores other similar patterns in global perspective. To achieve this end, a MCPA module is developed, as shown in Fig. 1.
 
 <div align="center">
       
@@ -73,10 +73,10 @@ Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/m
 
 - Since the spectral response function is known on the CAVE and Harvard datasets, the corresponding RGB images are generated using it. Other datasets with unknown spectral response function, Chikusei and Sample of Roman Collosseum, obtain corresponding RGB images via the position of pixels. Then, we random crop 64 patches with the size 12r × 12r from the each image in the training set, where r is upscale factor. All patches are augmented by random flip, rotation, and roll. Then, these patches are downsampled by the above strategy in this method to yield LR HSIs.
 
-    > Existing works normally adopt Gaussian to degrade HR image during constructing label pairs. In real-world scenarios, image degradation is complicated by noise, blur, and other factors. The performance of traditional SR models using only a single type of kernel is significantly degraded for realistic degraded images. SR under unknown degradation is more challenging than traditional SR under simple degradation. Anisotropic and isotropic Gaussian are employed to randomly generate different kernels with five sizes. Here, the range of rotation angle is set to [0, π] for anisotropic Gaussian kernel, and the range of kernel width is fixed at [0.2, r]. As for isotropic Gaussian kernel, the range of kernel width is set to [0.2, r]. Then, HR HSI X′ is downsampled by directly convolution, or is convoluted and interpolated. Gaussian noises with various levels are attached to the downsampled image. Finally, the label pair {X, X′} is obtained.
+    > Existing works normally adopt Gaussian to degrade HR image during constructing label pairs. In real-world scenarios, image degradation is complicated by noise, blur, and other factors. The performance of traditional SR models using only a single type of kernel is significantly degraded for realistic degraded images. SR under unknown degradation is more challenging than traditional SR under simple degradation. Anisotropic and isotropic Gaussian are employed to randomly generate different kernels with five sizes. Here, the range of rotation angle is set to $[0, π]$ for anisotropic Gaussian kernel, and the range of kernel width is fixed at $[0.2, r]$. As for isotropic Gaussian kernel, the range of kernel width is set to $[0.2, r]$. Then, HR HSI $X′$ is downsampled by directly convolution, or is convoluted and interpolated. Gaussian noises with various levels are attached to the downsampled image. Finally, the label pair ${X, X′}$ is obtained.
 
 - In the test stage, we adopt anisotropic Gaussian to generate kernel, so as to blur the HR HSI images. Each kernel is determined by a covariance matrix α , which is defined as
-α=[cos(θ)sin(θ)−sin(θ)cos(θ)][λ100λ2][
+$$\begin{align*} \alpha = \left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad {-}\sin \left ({\theta }\right)\\ \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array} }\right]\left [{ \begin{array}{cc} {\lambda _{1}}&\quad 0\\ 0&\quad {\lambda _{2}} \end{array} }\right]\left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad \sin \left ({\theta }\right)\\ {-} \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array}}\right] \end{align*}$$
 
 ## Implementation
 ### Pretrained model
@@ -88,8 +88,8 @@ Clone this repository:
 1. Install PyTorch and dependencies from [http://pytorch.org](http://pytorch.org).  
 1. You could download the [pre-trained model](https://github.com/qianngli/MulSR/blob/master/pre-train%20model.txt) from [Google Drive](https://drive.google.com/drive/folders/1LuXDv5__KDdC3EeJZU5DOMmbs0L4bE7I?usp=sharing).  
 1. Remember to change the following path to yours：
-   - `MulSR/train.py` line 36, 39.
-   - `MulSR/fine.py` line 71, 72.
+   - `IFMSR/train.py` line 33, 36.
+   - `IFMSR/fine.py` line 69, 70.
 
 ### Main parameter settings
 - With respect to experimental setup, we select the size of convolution kernels to be **3 × 3**, except for the kernels mentioned above. Moreover, the number of these kernels is set to **64**.
@@ -103,7 +103,6 @@ Clone this repository:
         parser.add_argument("--step", type=int, default=30, help="Sets the learning rate to the initial LR decayed by momentum every n epochs")
 
 - To optimize our model, the **ADAM** optimizer with **β1 = 0.9** and **β2 = 0.99** is chosen.
-- Moreover, we set **2α = β** in our article.
 
 ### Train & Test
 You can train or test directly from the command line as such:  
