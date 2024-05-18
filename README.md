@@ -79,7 +79,8 @@ Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/m
 
 $$\begin{align*} \alpha = \left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad {-}\sin \left ({\theta }\right)\\  
 \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array} }\right]\left [{ \begin{array}{cc} {\lambda _{1}}&\quad 0\\  
-0&\quad {\lambda _{2}} \end{array} }\right]\left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad \sin \left ({\theta }\right)\\ {-} \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array}}\right] \end{align*}$$  
+0&\quad {\lambda _{2}} \end{array} }\right]\left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad \sin \left ({\theta }\right)\\  
+{-} \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array}}\right] \end{align*}$$  
 
 ## Implementation
 ### Pretrained model
