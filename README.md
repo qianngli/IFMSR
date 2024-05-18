@@ -119,7 +119,7 @@ You can train or test directly from the command line as such:
 
 <div align="center">
 
-  ![TABLE_VI](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/TABLE_VI.png)  
+  ![TABLE_IV](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/TABLE_IV.png)  
 
 </div>
 
@@ -127,7 +127,7 @@ You can train or test directly from the command line as such:
 
 <div align="center">
       
-  ![Fig8](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig8.png)
+  ![Fig4](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig4.png)
 
 </div>
   
@@ -135,7 +135,7 @@ You can train or test directly from the command line as such:
 
 <div align="center">
    
-  ![Fig9](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig9.png)  
+  ![Fig5](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig5.png)  
     
 </div>
 
@@ -145,11 +145,11 @@ You can train or test directly from the command line as such:
 
 <div align="center">
   
-  ![Fig7](https://raw.githubusercontent.com/qianngli/Images/master/MulSR/Fig7.png)
+  ![Fig7](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig7.png)
   
 </div>
 
-* Fig. 7. Visual comparison on real HSI dataset. We choose the 2-3-5 bands after SR to synthesize the pseudo-color image.*  
+* Fig. 6. Visual comparison on real HSI dataset. We choose the 2-3-5 bands after SR to synthesize the pseudo-color image.*  
 
 ## Citation 
 
