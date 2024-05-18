@@ -90,7 +90,6 @@ Clone this repository:
         cd IFMSR
 
 1. Install PyTorch and dependencies from [http://pytorch.org](http://pytorch.org).  
-1. You could download the [pre-trained model](https://github.com/qianngli/MulSR/blob/master/pre-train%20model.txt) from [Google Drive](https://drive.google.com/drive/folders/1LuXDv5__KDdC3EeJZU5DOMmbs0L4bE7I?usp=sharing).  
 1. Remember to change the following path to yours：
    - `IFMSR/train.py` line 33, 36.
    - `IFMSR/fine.py` line 69, 70.
