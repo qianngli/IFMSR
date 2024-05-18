@@ -77,7 +77,9 @@ Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/m
 
 - In the test stage, we adopt anisotropic Gaussian to generate kernel, so as to blur the HR HSI images. Each kernel is determined by a covariance matrix α , which is defined as
 
-$$\begin{align*} \alpha = \left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad {-}\sin \left ({\theta }\right)\\ \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array} }\right]\left [{ \begin{array}{cc} {\lambda _{1}}&\quad 0\\ 0&\quad {\lambda _{2}} \end{array} }\right]\left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad \sin \left ({\theta }\right)\\ {-} \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array}}\right] \end{align*}$$  
+$$\begin{align*} \alpha = \left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad {-}\sin \left ({\theta }\right)\\  
+\sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array} }\right]\left [{ \begin{array}{cc} {\lambda _{1}}&\quad 0\\  
+0&\quad {\lambda _{2}} \end{array} }\right]\left [{ \begin{array}{cc} \cos \left ({\theta }\right)&\quad \sin \left ({\theta }\right)\\ {-} \sin \left ({\theta }\right)&\quad \cos \left ({\theta }\right) \end{array}}\right] \end{align*}$$  
 
 ## Implementation
 ### Pretrained model
