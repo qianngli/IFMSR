@@ -20,37 +20,38 @@ Therefore, how to leverage the intrinsic advantages of RGB image to assist the H
 
 ## Modules
 ### MCPA Module
-When the spectral imager generates HSI, it commonly obtains the corresponding RGB image. How to address RGB image with abundant color and texture to guide HSI SR is extremely challenging dilemma. To fully utilize raw RGB image, we deal with this image to generate more meaningful materials. Generally, some patches in the whole image appear similar patterns. These patches can benefit detail restoration, which has been verified in several previous low-level tasks. Although Li et al. [10] consider contextual information in image, it only focuses on local content, and ignores other similar patterns in global perspective. To achieve this end, a MCPA module is developed, as shown in Fig. 2.
+When the spectral imager generates HSI, it commonly obtains the corresponding RGB image. How to address RGB image with abundant color and texture to guide HSI SR is extremely challenging dilemma. To fully utilize raw RGB image, we deal with this image to generate more meaningful materials. Generally, some patches in the whole image appear similar patterns. These patches can benefit detail restoration, which has been verified in several previous low-level tasks. Although Li et al. [10] consider contextual information in image, it only focuses on local content, and ignores other similar patterns in global perspective. To achieve this end, a MCPA module is developed, as shown in Fig. 1.
 
 <div align="center">
       
-  ![Image text](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/MCPA.png)  
+  ![MCPA](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/MCPA.png)  
 
 </div>
 
-*Fig. 3. Visual results in terms of spatial domain with existing SR methods on CAVE dataset. The results of balloons image are evaluated for scale factor × 4. The first line denotes SR results of 10-th band, and the second line denotes SR results of 20-th band.*  
+*Fig. 1. Illustration of MCPA module. For clear description, the processing of patch aggregation only in RGB modality is shown.*  
   
 
 ### RDE Module
-Among the low-level encoder features, RGB features contain more detailed information (i.e., texture and color), which can provide a more direct and instructive representation than HSI features. This facilitates the feature learning during encoding. Nevertheless, previous works only simply fuses the features of each modality, and do not exploit this remarkable behavior to induce the model that encourages the feature exploration of HSI modality. To tackle this issue, an RDE module is proposed to generate region-aware dynamic filter to guide encoding in HSI modality. The structure of RDE module is illustrated in Fig. 3.
+Among the low-level encoder features, RGB features contain more detailed information (i.e., texture and color), which can provide a more direct and instructive representation than HSI features. This facilitates the feature learning during encoding. Nevertheless, previous works only simply fuses the features of each modality, and do not exploit this remarkable behavior to induce the model that encourages the feature exploration of HSI modality. To tackle this issue, an RDE module is proposed to generate region-aware dynamic filter to guide encoding in HSI modality. The structure of RDE module is illustrated in Fig. 2.
 
 <div align="center">
       
-  ![Image text](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/RDE.png)   
+  ![RDE](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/RDE.png)   
 
 </div>
 
-*Fig. 3. Visual results in terms of spatial domain with existing SR methods on CAVE dataset. The results of balloons image are evaluated for scale factor × 4. The first line denotes SR results of 10-th band, and the second line denotes SR results of 20-th band.*  
+*Fig. 2. The architecture of RGB-induced detail enhancement (RDE) module.*  
 
 ### Deep Cross-Modality Feature Modulation Module
-To produce super-resolved HSI, the two modality must be into a unified form during deep feature extraction. In this process, the RGB features are the auxiliary signals relative to the HSI features. For this reason, we propose a DCFM module, as illustrated in Fig. 1. This module modulates the RGB features and obtains the affine transformation coefficient to further enforce deep features in HSI modality.
+To produce super-resolved HSI, the two modality must be into a unified form during deep feature extraction. In this process, the RGB features are the auxiliary signals relative to the HSI features. For this reason, we propose a DCFM module, as illustrated in Fig. 3. This module modulates the RGB features and obtains the affine transformation coefficient to further enforce deep features in HSI modality.
 
 <div align="center">
       
-  ![Image text](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Deep_Cross-Modality_Feature_Modulation.png)   
+  ![Deep_Cross-Modality_Feature_Modulation](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Deep_Cross-Modality_Feature_Modulation.png)   
 
 </div>
 
+*Fig. 3. The architecture of Cross-Modality Feature Modulation module.*
 
 ## Dependencies  
 **PyTorch, NVIDIA GeForce GTX 1080 GPU.**
@@ -67,10 +68,14 @@ To produce super-resolved HSI, the two modality must be into a unified form duri
 Four public datasets, i.e., [CAVE](https://www1.cs.columbia.edu/CAVE/databases/multispectral/ "CAVE"), [Harvard](https://dataverse.harvard.edu/ "Harvard"), [Chikusei](https://naotoyokoya.com/Download.html "Chikusei") and [Sample of Roman Colosseum](https://earth.esa.int/eogateway/missions/worldview-2 "Sample of Roman Colosseum") are employed to verify the effectiveness of the proposed IFMSR.  
 
 - **CAVE and Harvard:** 80% images are randomly selected as training set and the rest as test set.
-- **Chikusei:** We crop the top left of the HSI (2000×2335×128) as the training set, and other content as the test set. To obtain extra samples, the training set is divided into non-overlapping images with size 200×194×128 .
-- **Sample of Roman Colosseum** To evaluate the performance in this dataset, the top left of the HSI (209×658×8 ) and HR RGB image (836×2632×3 ) are cropped to train model, and other part is selected to test.
+- **Chikusei:** We crop the top left of the HSI (2000 × 2335 × 128) as the training set, and other content as the test set. To obtain extra samples, the training set is divided into non-overlapping images with size 200 × 194 × 128.
+- **Sample of Roman Colosseum** To evaluate the performance in this dataset, the top left of the HSI (209 × 658 × 8) and HR RGB image (836 × 2632 × 3) are cropped to train model, and other part is selected to test.
 
-- Since the spectral response function is known on the CAVE and Harvard datasets, the corresponding RGB images are generated using it. Other datasets with unknown spectral response function, Chikusei and Sample of Roman Collosseum, obtain corresponding RGB images via the position of pixels. Then, we random crop 64 patches with the size 12r×12r from the each image in the training set, where r is upscale factor. All patches are augmented by random flip, rotation, and roll. Then, these patches are downsampled by the above strategy in Section III-E to yield LR HSIs. In the test stage, we adopt anisotropic Gaussian to generate kernel, so as to blur the HR HSI images. Each kernel is determined by a covariance matrix α , which is defined as
+- Since the spectral response function is known on the CAVE and Harvard datasets, the corresponding RGB images are generated using it. Other datasets with unknown spectral response function, Chikusei and Sample of Roman Collosseum, obtain corresponding RGB images via the position of pixels. Then, we random crop 64 patches with the size 12r × 12r from the each image in the training set, where r is upscale factor. All patches are augmented by random flip, rotation, and roll. Then, these patches are downsampled by the above strategy in this method to yield LR HSIs.
+
+    > Existing works normally adopt Gaussian to degrade HR image during constructing label pairs. In real-world scenarios, image degradation is complicated by noise, blur, and other factors. The performance of traditional SR models using only a single type of kernel is significantly degraded for realistic degraded images. SR under unknown degradation is more challenging than traditional SR under simple degradation. Anisotropic and isotropic Gaussian are employed to randomly generate different kernels with five sizes. Here, the range of rotation angle is set to [0, π] for anisotropic Gaussian kernel, and the range of kernel width is fixed at [0.2, r]. As for isotropic Gaussian kernel, the range of kernel width is set to [0.2, r]. Then, HR HSI X′ is downsampled by directly convolution, or is convoluted and interpolated. Gaussian noises with various levels are attached to the downsampled image. Finally, the label pair {X, X′} is obtained.
+
+- In the test stage, we adopt anisotropic Gaussian to generate kernel, so as to blur the HR HSI images. Each kernel is determined by a covariance matrix α , which is defined as
 α=[cos(θ)sin(θ)−sin(θ)cos(θ)][λ100λ2][
 
 ## Implementation
@@ -107,15 +112,14 @@ You can train or test directly from the command line as such:
     python fine.py --cuda --model_name checkpoint/model_4_epoch_xx.pth  
 
 ## Result  
-- To demonstrate the superiority of the proposed method, four approaches are compared with our method in each dimension. They are **MoG-DCN**, **UAL**, **PZRes-Net**, and **CoarseNet**. Among these competitors, UAL and CoarseNet contain two steps. The first step is to learn a general model by supervised manner. The second step is to optimize the model in specific image by unsupervised manner. Note that two methods need spectral response function in second step. For fair comparison, we remove the second step. The remaining works are supervised approaches.
-- To evaluate the performance, we apply peak signal-to- noise ratio (**PSNR**), structural similarity (**SSIM**), spectral angle mapper (**SAM**), and root mean squared error (**RMSE**). Here, the higher values of PSNR and SSIM indicate better quality of reconstructed image. Besides, the obtained image is better in the aspects of edge and texture, when the values of SAM and RMES are small.
+- To evaluate the performance of the proposed method, this Section introduces six approaches to compare generalization ability on different datasets and scales, including **LTTR**, **CMS**, **PZRes-Net**, **MHF-net**, **MoG-DCN**, and **UAL**. Here, LTTR and CMS are unsupervised, while the other competitors are supervised. Note that LTTR and CMS introduce spectral response function to optimize object function. In particular, UAL incorporates the spectral response function into the loss function to learn the model in the adaptation module. To make a fair comparison, the corresponding loss term is removed on Chikusei with an unknown spectral response function.
+- To evaluate the performance, peak signal-to-noise ratio (**PSNR**), structural similarity (**SSIM**), spectral angle mapper (**SAM**), relative dimensionless global error in synthesis (**ERGAS**), and root mean-squared error (**RMSE**) are exploited. Among these metrics, the higher the PSNR and SSIM values, the better the performance. The lower the SAM, ERGAS, and RMSE values, the better the reconstruction quality.
 
 ### Quantitative Evaluation
 
 <div align="center">
 
   ![TABLE_VI](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/TABLE_VI.png)  
-  ![TABLE_VII](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/TABLE_VII.png)  
 
 </div>
 
@@ -127,24 +131,31 @@ You can train or test directly from the command line as such:
 
 </div>
   
-  
+* Fig. 4. Visual comparison of spatial reconstruction. The first to three lines represent the visual results of the 15th band, 15th band, and 100th band, respectively.*
+
 <div align="center">
    
   ![Fig9](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig9.png)  
     
 </div>
 
-  
-<div align="center">
+* Fig.5. Visualcomparisonofspectraldistortionforcorrespondingimagesbyselectingtwopixels. (Left toright)Visual resultsofaboveimages.*
 
-  ![Fig10](https://raw.githubusercontent.com/qianngli/Images/master/IFMSR/Fig10.png)  
-    
+### Application on Real Hyperspectral Image
+
+<div align="center">
+  
+  ![Fig7](https://raw.githubusercontent.com/qianngli/Images/master/MulSR/Fig7.png)
+  
 </div>
- 
+
+* Fig. 7. Visual comparison on real HSI dataset. We choose the 2-3-5 bands after SR to synthesize the pseudo-color image.*  
 
 ## Citation 
 
-[1] 
+[1] **Q. Li**, Q. Wang and X. Li, "Exploring the Relationship Between 2D/3D Convolution for Hyperspectral Image Super-Resolution," *IEEE Transactions on Geoscience and Remote Sensing*, vol. 59, no. 10, pp. 8693-8703, 2021.  
+[2] **Q. Li**, Y. Yuan, X. Jia and Q. Wang, "Dual-Stage Approach Toward Hyperspectral Image Super-Resolution," *IEEE Transactions on Image Processing*, vol. 31, pp. 7252-7263, 2022.  
+[3] **Q. Li**, M. Gong, Y. Yuan and Q. Wang, "Symmetrical Feature Propagation Network for Hyperspectral Image Super-Resolution," *IEEE Transactions on Geoscience and Remote Sensing*, vol. 60, pp. 1-12, 2022.  
 
 --------
 If you has any questions, please send e-mail to liqmges@gmail.com.
